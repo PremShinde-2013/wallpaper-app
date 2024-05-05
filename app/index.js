@@ -6,8 +6,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 import { theme } from "../constants/theme";
 import { useRouter } from "expo-router";
+
+import { NativeWindStyleSheet } from "nativewind";
+
 const WelcomeScreen = () => {
 	const router = useRouter();
+
+	NativeWindStyleSheet.setOutput({
+		default: "native",
+	});
 
 	return (
 		<View className='flex-1' style={styles.container}>
@@ -32,7 +39,7 @@ const WelcomeScreen = () => {
 				/>
 				<View
 					// style={styles.contentContainer}
-					className='flex-1 items-center justify-end gap-8 '
+					className='flex-1 items-center justify-end gap-8  mb-12'
 				>
 					<Animated.Text
 						entering={FadeInDown.delay(400).springify()}
