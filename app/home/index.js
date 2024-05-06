@@ -1,4 +1,11 @@
-import { View, Text, Pressable, ScrollView, TextInput } from "react-native";
+import {
+	View,
+	Text,
+	Pressable,
+	ScrollView,
+	TextInput,
+	ActivityIndicator,
+} from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -22,6 +29,7 @@ const HomeScreen = () => {
 	const [filters, setFilters] = useState(null);
 	const [images, setImages] = useState([]);
 	const modalRef = useRef(null);
+	const scrollRef = useRef(null);
 
 	useEffect(() => {
 		fetchImages();
@@ -46,6 +54,7 @@ const HomeScreen = () => {
 		page = 1;
 		let params = {
 			page,
+			...filters,
 		};
 		if (cat) params.category = cat;
 		fetchImages(params, false);
@@ -66,7 +75,7 @@ const HomeScreen = () => {
 
 			setActiveCategory(null);
 			setImages([]);
-			fetchImages({ page });
+			fetchImages({ page, ...filters }, false);
 		}
 	};
 	const handleTextDebounce = useCallback(debounce(handleSearch, 400), []);
@@ -84,26 +93,69 @@ const HomeScreen = () => {
 	};
 
 	const applyFilters = () => {
-		console.log("apply filters");
+		if (filters) {
+			page = 1;
+			setImages([]);
+			let params = { page, ...filters };
+			if (activeCategory) params.category = activeCategory;
+			if (search) params.q = search;
+			fetchImages(params, false);
+		}
 		closeFilterModal();
 	};
 	const resetFilters = () => {
-		console.log("reset filters");
+		if (filters) {
+			page = 1;
+			setFilters(null);
+			setImages([]);
+			let params = { page };
+		}
 		closeFilterModal();
+	};
+
+	const clearThisFilter = (filterName) => {
+		let filterz = { ...filters };
+		delete filterz[filterName];
+		setFilters({ ...filterz });
+		page = 1;
+		setImages([]);
+		let params = {
+			page,
+			...filterz,
+		};
+		if (activeCategory) params.category = activeCategory;
+		if (search) params.q = search;
+		fetchImages(params, false);
+	};
+
+	const handleScroll = (event) => {
+		console.log("sceo");
+	};
+
+	const handleScrollUp = () => {
+		scrollRef?.current?.scrollTo({
+			y: 0,
+			animated: true,
+		});
 	};
 
 	console.log("filters : ", filters);
 	return (
 		<View className={`flex-1 gap-4 `} style={{ paddingTop }}>
 			<View className='mx-4 flex-row justify-between items-center '>
-				<Pressable>
+				<Pressable onPress={handleScrollUp}>
 					<Text className='pl-4  font-medium text-2xl'>Wallpaper Saga</Text>
 				</Pressable>
 				<Pressable onPress={openFilterModal}>
 					<FontAwesome6 name='bars-staggered' size={24} color='orange' />
 				</Pressable>
 			</View>
-			<ScrollView contentContainerStyle={{ gap: 15 }}>
+			<ScrollView
+				onScroll={handleScroll}
+				scrollEventThrottle={5}
+				ref={scrollRef}
+				contentContainerStyle={{ gap: 15 }}
+			>
 				<View className='flex-row justify-between items-center rounded-xl border-orange-200 bg-orange-50  p-1 pl-3 border-2  mx-4'>
 					<View className='p-1'>
 						<FontAwesome name='search' size={24} color='orange' />
@@ -132,9 +184,54 @@ const HomeScreen = () => {
 					/>
 				</View>
 
+				{/* filters */}
+				{filters && (
+					<View className='mx-3'>
+						<ScrollView
+							className='gap-2 '
+							horizontal
+							showsHorizontalScrollIndicator={false}
+						>
+							{Object.keys(filters).map((key, index) => {
+								return (
+									<View
+										key={key}
+										className='bg-orange-200 flex-row items-center p-1 justify-center rounded-xl  px-3  gap-1 '
+									>
+										{key === "colors" ? (
+											<View
+												style={{
+													height: 20,
+													width: 35,
+													borderRadius: 7,
+													backgroundColor: filters[key],
+												}}
+											/>
+										) : (
+											<Text className='font-medium   '>{filters[key]}</Text>
+										)}
+
+										<Pressable
+											onPress={() => clearThisFilter(key)}
+											className='bg-orange-100  rounded-2xl'
+										>
+											<Ionicons name='close' size={14} color='orange' />
+										</Pressable>
+									</View>
+								);
+							})}
+						</ScrollView>
+					</View>
+				)}
+
 				{/* images masonary grid */}
 
 				<View>{images.length > 0 ? <ImageGrid images={images} /> : null}</View>
+				<View
+					style={{ marginBottom: 70, marginTop: images.length > 0 ? 10 : 70 }}
+				>
+					<ActivityIndicator size='large' color='orange' />
+				</View>
 			</ScrollView>
 
 			<FiltersModal

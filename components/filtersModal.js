@@ -1,13 +1,14 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import React, { useMemo } from "react";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { BlurView } from "expo-blur";
 import Animated, {
 	Extrapolation,
+	FadeInDown,
 	interpolate,
 	useAnimatedStyle,
 } from "react-native-reanimated";
-import SectionView, { CommonFilterRow } from "./filterViews";
+import SectionView, { ColorFilterRow, CommonFilterRow } from "./filterViews";
 import { capitalize } from "../helpers/common";
 import { data } from "../constants/data";
 
@@ -43,7 +44,12 @@ const FiltersModal = ({
 							let title = capitalize(sectionName);
 
 							return (
-								<View key={sectionName}>
+								<Animated.View
+									entering={FadeInDown.delay(index * 100 + 100)
+										.springify()
+										.damping(11)}
+									key={sectionName}
+								>
 									<SectionView
 										title={title}
 										content={sectionView({
@@ -53,9 +59,33 @@ const FiltersModal = ({
 											filterName: sectionName,
 										})}
 									/>
-								</View>
+								</Animated.View>
 							);
 						})}
+
+						{/* actions */}
+
+						<Animated.View
+							entering={FadeInDown.delay(500).springify().damping(11)}
+							className='flex-row flex-1 justify-around   items-center '
+						>
+							<Pressable
+								className='border-2 border-orange-100 rounded-2xl px-12 py-3 bg-orange-50'
+								onPress={onReset}
+							>
+								<Text className='text-black text-base font-semibold '>
+									Reset
+								</Text>
+							</Pressable>
+							<Pressable
+								onPress={onApply}
+								className='border-2 border-orange-500 rounded-2xl px-12 py-3 bg-orange-500 '
+							>
+								<Text className='text-white font-semibold text-base '>
+									Apply
+								</Text>
+							</Pressable>
+						</Animated.View>
 					</View>
 				</BottomSheetView>
 			</BottomSheetModal>
@@ -67,7 +97,7 @@ const sections = {
 	order: (props) => <CommonFilterRow {...props} />,
 	orientation: (props) => <CommonFilterRow {...props} />,
 	type: (props) => <CommonFilterRow {...props} />,
-	colors: (props) => <CommonFilterRow {...props} />,
+	colors: (props) => <ColorFilterRow {...props} />,
 };
 
 const CustomBackdrop = ({ animatedIndex, style }) => {

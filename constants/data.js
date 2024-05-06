@@ -23,17 +23,17 @@ const categories = [
 
 const filters = {
 	colors: [
-		"grayscale",
-		"transparent",
+		// "grayscale",
+		// "transparent",
 		"red",
 		"orange",
 		"yellow",
 		"green",
 		"turquoise",
 		"blue",
-		"lilac",
+		// "lilac",
 		"pink",
-		"white",
+		// "white",
 		"gray",
 		"black",
 		"brown",
