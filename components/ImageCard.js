@@ -3,7 +3,7 @@ import React from "react";
 import { Image } from "expo-image";
 import { getImageSize } from "../helpers/common";
 
-const ImageCard = ({ item, index, columns }) => {
+const ImageCard = ({ item, index, columns, router }) => {
 	const isLastInRow = () => {
 		return (index + 1) % columns === 0;
 	};
@@ -15,6 +15,9 @@ const ImageCard = ({ item, index, columns }) => {
 
 	return (
 		<Pressable
+			onPress={() =>
+				router.push({ pathname: "home/image", params: { ...item } })
+			}
 			className='bg-gray-800 rounded-2xl overflow-hidden mb-3 mx-1'
 			style={[!isLastInRow()]}
 		>

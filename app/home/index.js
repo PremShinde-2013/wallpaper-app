@@ -19,6 +19,7 @@ import { apiCall } from "../../api";
 import ImageGrid from "../../components/ImageGrid";
 import { debounce } from "lodash";
 import FiltersModal from "../../components/filtersModal";
+import { useRouter } from "expo-router";
 
 const HomeScreen = () => {
 	const { top } = useSafeAreaInsets();
@@ -28,13 +29,15 @@ const HomeScreen = () => {
 	const [activeCategory, setActiveCategory] = useState(null);
 	const [filters, setFilters] = useState(null);
 	const [images, setImages] = useState([]);
+	const [isEndReached, setIsEndReached] = useState(false);
 	const modalRef = useRef(null);
 	const scrollRef = useRef(null);
+	const router = useRouter();
 
 	useEffect(() => {
 		fetchImages();
 	}, []);
-	const fetchImages = async (params = { page: 1 }, append = false) => {
+	const fetchImages = async (params = { page: 1 }, append = true) => {
 		console.log("params: ", params, append);
 		let res = await apiCall(params);
 		// console.log("results: ", res.data?.hits[0]);
@@ -129,7 +132,29 @@ const HomeScreen = () => {
 	};
 
 	const handleScroll = (event) => {
-		console.log("sceo");
+		const contentHeight = event.nativeEvent?.contentSize?.height;
+		const scrollViewHeight = event.nativeEvent?.layoutMeasurement?.height;
+		const scrollOffset = event.nativeEvent?.contentOffset?.y;
+		const bottomPosition = contentHeight - scrollViewHeight;
+
+		if (scrollOffset >= bottomPosition - 1) {
+			if (!isEndReached) {
+				setIsEndReached(true);
+
+				console.log("bottom reached");
+
+				++page;
+				let params = {
+					page,
+					...filters,
+				};
+				if (activeCategory) params.category = activeCategory;
+				if (search) params.q = search;
+				fetchImages(params);
+			} else if (isEndReached) {
+				setIsEndReached(false);
+			}
+		}
 	};
 
 	const handleScrollUp = () => {
@@ -226,7 +251,11 @@ const HomeScreen = () => {
 
 				{/* images masonary grid */}
 
-				<View>{images.length > 0 ? <ImageGrid images={images} /> : null}</View>
+				<View>
+					{images.length > 0 ? (
+						<ImageGrid images={images} router={router} />
+					) : null}
+				</View>
 				<View
 					style={{ marginBottom: 70, marginTop: images.length > 0 ? 10 : 70 }}
 				>

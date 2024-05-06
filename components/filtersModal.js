@@ -120,7 +120,12 @@ const CustomBackdrop = ({ animatedIndex, style }) => {
 	];
 	return (
 		<Animated.View style={containerStyle}>
-			<BlurView style={StyleSheet.absoluteFill} tint='dark' intensity={25} />
+			<BlurView
+				experimentalBlurMethod='dimezisBlurView'
+				style={StyleSheet.absoluteFill}
+				tint='dark'
+				intensity={25}
+			/>
 		</Animated.View>
 	);
 };
