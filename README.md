@@ -1,7 +1,7 @@
 
 ---
 
-# Awesome Wallpaper App
+# Wallpaper App
 
 
 Welcome to the Wallpaper App! This React Native application utilizes the Pexels API to provide users with a vast collection of stunning wallpapers. With its sleek design and powerful features, this app is sure to enhance your device's aesthetics.
