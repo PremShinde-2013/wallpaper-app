@@ -3,12 +3,10 @@ import {
 	View,
 	Text,
 	StyleSheet,
-	Button,
 	Image,
 	Platform,
 	ActivityIndicator,
 	Pressable,
-	Alert,
 } from "react-native";
 import { BlurView } from "expo-blur";
 import { wp } from "../../helpers/common";
