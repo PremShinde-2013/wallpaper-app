@@ -46,7 +46,6 @@ Welcome to the Wallpaper App! This React Native application utilizes the Pexels 
    ```bash
    npm start
    ```
-
 5. Use your preferred mobile device to scan the QR code displayed in the terminal or the Expo DevTools to open the app.
 
 ## Contributing
